@@ -66,6 +66,7 @@ class _TreeViewAState extends State<TreeViewA> {
       shrinkWrap: widget.level != 0,
       itemBuilder: (context, ind) {
         return ExpansionTile(
+          shape: const Border(),
           onExpansionChanged: (value) => nodes.elementAt(ind).expanded = value,
           initiallyExpanded: nodes.elementAt(ind).expanded,
           dense: true,
@@ -76,13 +77,17 @@ class _TreeViewAState extends State<TreeViewA> {
               ),
               Padding(
                 padding: const EdgeInsets.only(right: 8),
-                child: Icon(iconeItem(ind)),
+                child: Icon(
+                  iconeItem(ind),
+                  color: Colors.black,
+                ),
               ),
               iconeAlerta(ind),
               Expanded(
                 child: Text(
                   nodes.elementAt(ind).name,
                   overflow: TextOverflow.fade,
+                  style: const TextStyle(color: Colors.black),
                 ),
               ),
             ],

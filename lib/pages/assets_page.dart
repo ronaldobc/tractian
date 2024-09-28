@@ -70,18 +70,22 @@ class _AssetsPageState extends State<AssetsPage> {
     locationsFiltered = listaLocations;
     assetsFiltered = listaAssets;
 
-    montaLista();
+    montaLista(salvaCache: true);
   }
+
+  var listaLocationsCache = <Location>[];
+  var listaAssetsCache = <Asset>[];
 
   var listaLocations2 = <Location>[];
   var listaAssets2 = <Asset>[];
 
-  Future<void> montaLista() async {
-    print(">> Iniciou Monta Lista");
-
+  Future<void> montaLista({bool salvaCache = false}) async {
     await Future.wait([locaisRaiz(), assetsRaiz()]);
 
-    print(">> Fim monta Lista");
+    if (salvaCache) {
+      listaLocationsCache = listaLocations2.sublist(0);
+      listaAssetsCache = listaAssets2.sublist(0);
+    }
 
     setState(() {
       carregando = false;
@@ -130,8 +134,6 @@ class _AssetsPageState extends State<AssetsPage> {
     for (var tmp in x) {
       assetsFilhosPorAssetPai(tmp);
     }
-
-    setState(() {});
   }
 
   var locationsFiltered = <Location>[];
@@ -191,9 +193,13 @@ class _AssetsPageState extends State<AssetsPage> {
       assetsFiltered.sort((a1, a2) => a1.name.compareTo(a2.name));
       montaLista();
     } else {
-      locationsFiltered = listaLocations;
-      assetsFiltered = listaAssets;
-      montaLista();
+      //locationsFiltered = listaLocations;
+      //assetsFiltered = listaAssets;
+      //montaLista();
+      setState(() {
+        listaLocations2 = listaLocationsCache.sublist(0);
+        listaAssets2 = listaAssetsCache.sublist(0);
+      });
     }
   }
 
@@ -248,6 +254,11 @@ class _AssetsPageState extends State<AssetsPage> {
                         keyboardType: TextInputType.text,
                         controller: pesquisaController,
                         onChanged: (value) => filtrar(),
+                        decoration: const InputDecoration(
+                          hintText: "Buscar Ativo",
+                          border: OutlineInputBorder(),
+                          prefixIcon: Icon(Icons.search),
+                        ),
                       ),
                       const SizedBox(height: 20),
                       Row(

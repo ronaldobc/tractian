@@ -83,7 +83,7 @@ class _TreeViewState extends State<TreeView> {
       var tipo = 'L';
       if (ind >= nodes.length) {
         ind = ind - nodes.length;
-        tipo = nodesA.elementAt(ind).sensorType!;
+        tipo = nodesA.elementAt(ind).sensorType ?? '';
       }
       switch (tipo) {
         case 'L':
@@ -126,6 +126,7 @@ class _TreeViewState extends State<TreeView> {
       shrinkWrap: widget.level != 0,
       itemBuilder: (context, ind) {
         return ExpansionTile(
+          shape: const Border(),
           onExpansionChanged: (value) => setExpanded(ind, value),
           initiallyExpanded: getExpanded(ind),
           dense: true,
@@ -136,13 +137,17 @@ class _TreeViewState extends State<TreeView> {
               ),
               Padding(
                 padding: const EdgeInsets.only(right: 8),
-                child: Icon(iconeItem(ind)),
+                child: Icon(
+                  iconeItem(ind),
+                  color: Colors.black,
+                ),
               ),
               iconeAlerta(ind),
               Expanded(
                 child: Text(
                   getElementName(ind),
                   overflow: TextOverflow.fade,
+                  style: const TextStyle(color: Colors.black),
                 ),
               ),
             ],
