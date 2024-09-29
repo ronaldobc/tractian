@@ -182,6 +182,18 @@ class _AssetsPageState extends State<AssetsPage> {
         opcoes.contains(1) ||
         pesquisaController.text.isNotEmpty) {
       locationsFiltered = [];
+      if (pesquisaController.text.isNotEmpty) {
+        locationsFiltered = listaLocations
+            .where((l) => l.name
+                .toLowerCase()
+                .contains(pesquisaController.text.toLowerCase()))
+            .toList();
+        for (var loc in locationsFiltered.sublist(0)) {
+          if (loc.parentId != null) {
+            addParentLocation(loc.parentId);
+          }
+        }
+      }
       assetsFiltered =
           listaAssets.where((a) => assetSearchCondition(a)).toList();
       for (var a in assetsFiltered.sublist(0)) {
@@ -257,7 +269,7 @@ class _AssetsPageState extends State<AssetsPage> {
                         controller: pesquisaController,
                         onChanged: (value) => filtrar(),
                         decoration: const InputDecoration(
-                          hintText: "Buscar Ativo",
+                          hintText: "Buscar Ativo ou Local",
                           border: OutlineInputBorder(),
                           prefixIcon: Icon(Icons.search),
                         ),
