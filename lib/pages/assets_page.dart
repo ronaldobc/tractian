@@ -67,6 +67,9 @@ class _AssetsPageState extends State<AssetsPage> {
       // });
     }
 
+    listaLocations.sort((l1, l2) => l1.name.compareTo(l2.name));
+    listaAssets.sort((a1, a2) => a1.name.compareTo(a2.name));
+
     locationsFiltered = listaLocations;
     assetsFiltered = listaAssets;
 
@@ -82,10 +85,10 @@ class _AssetsPageState extends State<AssetsPage> {
   Future<void> montaLista({bool salvaCache = false}) async {
     await Future.wait([locaisRaiz(), assetsRaiz()]);
 
-    if (salvaCache) {
-      listaLocationsCache = listaLocations2.sublist(0);
-      listaAssetsCache = listaAssets2.sublist(0);
-    }
+    // if (salvaCache) {
+    //   listaLocationsCache = listaLocations2.sublist(0);
+    //   listaAssetsCache = listaAssets2.sublist(0);
+    // }
 
     setState(() {
       carregando = false;
@@ -95,9 +98,9 @@ class _AssetsPageState extends State<AssetsPage> {
   Future<void> locaisRaiz() async {
     listaLocations2 =
         locationsFiltered.where((l) => l.parentId == null).toList();
-    await Future.forEach(listaLocations2, (l) {
-      locaisFilhos(l);
-      assetsFilhos(l);
+    await Future.forEach(listaLocations2, (l) async {
+      await locaisFilhos(l);
+      await assetsFilhos(l);
     });
   }
 
@@ -105,8 +108,8 @@ class _AssetsPageState extends State<AssetsPage> {
     listaAssets2 = assetsFiltered
         .where((a) => a.locationId == null && a.parentId == null)
         .toList();
-    await Future.forEach(listaAssets2, (a) {
-      assetsFilhosPorAssetPai(a);
+    await Future.forEach(listaAssets2, (a) async {
+      await assetsFilhosPorAssetPai(a);
     });
   }
 
@@ -150,28 +153,27 @@ class _AssetsPageState extends State<AssetsPage> {
       } else {
         return (a.sensorType == 'energy' && a.status == 'alert');
       }
-    } else {
+    } else if (opcoes.contains(0) || opcoes.contains(1)) {
       if (pesquisaController.text.isNotEmpty) {
-        if (opcoes.contains(0) || opcoes.contains(1)) {
+        if (opcoes.contains(0)) {
           return (a.sensorType == 'energy' &&
-                  opcoes.contains(0) &&
-                  a.name
-                      .toLowerCase()
-                      .contains(pesquisaController.text.toLowerCase())) ||
-              (a.status == 'alert' &&
-                  opcoes.contains(1) &&
-                  a.name
-                      .toLowerCase()
-                      .contains(pesquisaController.text.toLowerCase()));
+              a.name
+                  .toLowerCase()
+                  .contains(pesquisaController.text.toLowerCase()));
         } else {
-          return (a.name
-              .toLowerCase()
-              .contains(pesquisaController.text.toLowerCase()));
+          return (a.status == 'alert' &&
+              a.name
+                  .toLowerCase()
+                  .contains(pesquisaController.text.toLowerCase()));
         }
       } else {
         return (a.sensorType == 'energy' && opcoes.contains(0)) ||
             (a.status == 'alert' && opcoes.contains(1));
       }
+    } else {
+      return (a.name
+          .toLowerCase()
+          .contains(pesquisaController.text.toLowerCase()));
     }
   }
 
@@ -193,13 +195,13 @@ class _AssetsPageState extends State<AssetsPage> {
       assetsFiltered.sort((a1, a2) => a1.name.compareTo(a2.name));
       montaLista();
     } else {
-      //locationsFiltered = listaLocations;
-      //assetsFiltered = listaAssets;
-      //montaLista();
-      setState(() {
-        listaLocations2 = listaLocationsCache.sublist(0);
-        listaAssets2 = listaAssetsCache.sublist(0);
-      });
+      locationsFiltered = listaLocations;
+      assetsFiltered = listaAssets;
+      montaLista();
+      // setState(() {
+      //   listaLocations2 = listaLocationsCache.sublist(0);
+      //   listaAssets2 = listaAssetsCache.sublist(0);
+      // });
     }
   }
 
